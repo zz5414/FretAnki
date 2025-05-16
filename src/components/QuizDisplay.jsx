@@ -24,21 +24,38 @@ const QuizDisplayMinimal = ({ quiz, feedbackMessage }) => {
   }
 
   return (
-    <div className="fixed top-2 left-1/2 -translate-x-1/2 w-auto min-w-[200px] sm:min-w-[220px] max-w-[80%] z-20">
-      <div className={`bg-opacity-80 backdrop-blur-sm shadow-xl rounded-md px-3 py-2 text-slate-50 border border-slate-700 transition-colors duration-300 ${quizBgColor}`}>
-        {/* Quiz Question - Always visible if quiz exists */} 
-        <p className="text-sm sm:text-base text-center font-semibold font-mono truncate">
-          {quiz.questionText}
-        </p>
-        
-        {/* Feedback Message - Only shown if feedback exists and it's an incorrect answer, or for a very short time for correct/neutral */}
-        {feedbackMessage && feedbackMessage.type === 'incorrect' && (
-          <p className="text-xs text-center font-medium mt-1 text-white truncate">
-            {feedbackMessage.text} 
+    <>
+      {/* Main Quiz Question */}
+      <div className="fixed top-2 left-1/2 -translate-x-1/2 w-auto min-w-[200px] sm:min-w-[220px] max-w-[80%] z-20">
+        <div className={`bg-opacity-80 backdrop-blur-sm shadow-xl rounded-md px-3 py-2 text-slate-50 border border-slate-700 transition-colors duration-300 ${quizBgColor}`}>
+          <p className="text-sm sm:text-base text-center font-semibold font-mono truncate">
+            {quiz.questionText}
           </p>
-        )}
+        </div>
       </div>
-    </div>
+      
+      {/* Toast notification for incorrect answers */}
+      {feedbackMessage && feedbackMessage.type === 'incorrect' && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 w-auto min-w-[200px] sm:min-w-[220px] max-w-[80%] z-30 animate-fade-in">
+          <div className="bg-red-600 bg-opacity-90 backdrop-blur-sm shadow-xl rounded-md px-3 py-2 text-white border border-red-500">
+            <p className="text-xs text-center font-medium truncate">
+              {feedbackMessage.text}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Toast notification for quiz completion */}
+      {feedbackMessage && feedbackMessage.type === 'complete' && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 w-auto min-w-[200px] sm:min-w-[260px] max-w-[80%] z-30 animate-fade-in">
+          <div className="bg-blue-600 bg-opacity-90 backdrop-blur-sm shadow-xl rounded-md px-4 py-3 text-white border border-blue-500">
+            <p className="text-xs sm:text-sm text-center font-medium">
+              {feedbackMessage.text}
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

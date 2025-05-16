@@ -1,6 +1,7 @@
 import React from 'react';
+import { getNote } from '../utils/guitarLogic';
 
-const Fretboard = ({ onNoteSelect, highlightCorrectAnswer, selectedNote: propSelectedNote }) => {
+const Fretboard = ({ onNoteSelect, highlightCorrectAnswer, selectedNote: propSelectedNote, showAnswerLabel }) => {
   // --- Constants ---
   const numStrings = 6;
   const numFrets = 12; // 0 (open) to 12
@@ -135,6 +136,53 @@ const Fretboard = ({ onNoteSelect, highlightCorrectAnswer, selectedNote: propSel
     return markers;
   };
 
+  const renderNoteLabels = () => {
+    const labels = [];
+    for (let stringIdx = 0; stringIdx < numStrings; stringIdx++) {
+      const stringY = neckStartY + (stringIdx + 0.75) * stringSpacing;
+      
+      for (let fretIdx = 0; fretIdx <= numFrets; fretIdx++) {
+        let noteX;
+        if (fretIdx === 0) {
+          noteX = neckVisualStartActualX + zeroFretClickableZoneWidth / 2;
+        } else {
+          const prevFretWireX = fretIdx === 1 ? fretboardVisualStartX : fretWireXPositions[fretIdx - 2];
+          const currentFretWireX = fretWireXPositions[fretIdx - 1];
+          noteX = prevFretWireX + (currentFretWireX - prevFretWireX) / 2;
+        }
+        
+        const note = getNote(stringIdx, fretIdx);
+        
+        // Check if this position matches a correct answer to be shown
+        const isCorrectAnswerLocation = showAnswerLabel && 
+          highlightCorrectAnswer && 
+          highlightCorrectAnswer.string === stringIdx && 
+          highlightCorrectAnswer.fret === fretIdx;
+          
+        // Only render note label if it's a correct answer being revealed
+        if (isCorrectAnswerLocation) {
+          labels.push(
+            <text
+              key={`note-label-${stringIdx}-${fretIdx}`}
+              x={noteX}
+              y={stringY}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="#ffffff"
+              fontFamily="monospace"
+              fontWeight="bold"
+              fontSize={Math.min(stringSpacing / 2.2, 14)}
+              style={{ pointerEvents: "none" }}
+            >
+              {note}
+            </text>
+          );
+        }
+      }
+    }
+    return labels;
+  };
+
   const renderClickableNotes = () => {
     const notes = [];
     const clickableFretWidthRatio = 0.85;
@@ -197,7 +245,7 @@ const Fretboard = ({ onNoteSelect, highlightCorrectAnswer, selectedNote: propSel
       noteX = prevFretWireX + (currentFretWireX - prevFretWireX) / 2;
     }
     return (
-      <circle cx={noteX} cy={stringY} r={noteMarkerRadius} fill="rgba(239, 68, 68, 0.75)" stroke="#FFFFFF" strokeWidth="2" style={{ pointerEvents: "none" }} className="transition-all duration-150" />
+      <circle cx={noteX} cy={stringY} r={noteMarkerRadius} fill="rgba(52, 211, 153, 0.75)" stroke="#FFFFFF" strokeWidth="2" style={{ pointerEvents: "none" }} className="transition-all duration-150" />
     );
   };
 
@@ -214,7 +262,7 @@ const Fretboard = ({ onNoteSelect, highlightCorrectAnswer, selectedNote: propSel
       noteX = prevFretWireX + (currentFretWireX - prevFretWireX) / 2;
     }
     return (
-      <circle cx={noteX} cy={stringY} r={correctAnswerMarkerRadius} fill="none" stroke="rgba(52, 211, 153, 0.9)" strokeWidth="3.5" style={{ pointerEvents: "none" }} className="transition-all duration-150" />
+      <circle cx={noteX} cy={stringY} r={correctAnswerMarkerRadius} fill="none" stroke="rgba(220, 38, 38, 0.9)" strokeWidth="3.5" style={{ pointerEvents: "none" }} className="transition-all duration-150" />
     );
   };
 
@@ -235,6 +283,7 @@ const Fretboard = ({ onNoteSelect, highlightCorrectAnswer, selectedNote: propSel
         {renderClickableNotes()}
         {renderUserSelectionMarker()}
         {renderCorrectAnswerHighlightMarker()}
+        {renderNoteLabels()}
       </svg>
     </div>
   );

@@ -43,6 +43,9 @@ const PracticeScreen = ({ stage, onBack }) => {
   const [showCorrectAnswerHighlight, setShowCorrectAnswerHighlight] = useState(false);
   const [correctAnswerDetails, setCorrectAnswerDetails] = useState(null);
   const [quizProgress, setQuizProgress] = useState({ current: 0, total: 0 });
+  const [wrongAttempts, setWrongAttempts] = useState(0);
+  const [showAnswerLabel, setShowAnswerLabel] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   // 단계별 퀴즈 시퀀스 생성
   useEffect(() => {
@@ -52,6 +55,7 @@ const PracticeScreen = ({ stage, onBack }) => {
       setQuizSequence(sequence);
       setQuizProgress({ current: 1, total: sequence.length });
       setCurrentQuizIndex(0);
+      setQuizCompleted(false);
     }
   }, [stage]);
 
@@ -65,6 +69,8 @@ const PracticeScreen = ({ stage, onBack }) => {
       setShowCorrectAnswerHighlight(false);
       setCorrectAnswerDetails(null);
       setQuizProgress(prev => ({ ...prev, current: currentQuizIndex + 1 }));
+      setWrongAttempts(0);
+      setShowAnswerLabel(false);
     }
   }, [quizSequence, currentQuizIndex]);
 
@@ -74,12 +80,31 @@ const PracticeScreen = ({ stage, onBack }) => {
       setCurrentQuizIndex(prevIndex => prevIndex + 1);
     } else {
       // 모든 퀴즈 완료
+      setQuizCompleted(true);
       setFeedbackMessage({ 
         type: 'complete', 
         text: `모든 퀴즈를 완료했습니다! (${quizSequence.length}/${quizSequence.length})` 
       });
     }
   }, [currentQuizIndex, quizSequence.length]);
+
+  // Restart the current practice
+  const handleRestartPractice = () => {
+    // Reset all state and regenerate the quiz sequence
+    if (stage && stage.quizzes) {
+      const sequence = generateQuizSequence(stage.quizzes, 3);
+      setQuizSequence(sequence);
+      setQuizProgress({ current: 1, total: sequence.length });
+      setCurrentQuizIndex(0);
+      setSelectedNoteInfo(null);
+      setFeedbackMessage(null);
+      setShowCorrectAnswerHighlight(false);
+      setCorrectAnswerDetails(null);
+      setWrongAttempts(0);
+      setShowAnswerLabel(false);
+      setQuizCompleted(false);
+    }
+  };
 
   // 노트 선택 처리
   const handleNoteSelect = (stringIndex, fretNum) => {
@@ -96,16 +121,25 @@ const PracticeScreen = ({ stage, onBack }) => {
       setFeedbackMessage({ type: 'correct', text: `정답입니다! ${noteName}` });
       setShowCorrectAnswerHighlight(false);
       setCorrectAnswerDetails(null);
+      setWrongAttempts(0);
       setTimeout(nextQuiz, 1200);
     } else {
-      // 오답
-      const quizStringNumber = currentQuiz.string + 1;
+      // 오답 - 틀린 횟수 증가
+      const newWrongAttempts = wrongAttempts + 1;
+      setWrongAttempts(newWrongAttempts);
+      
+      // 토스트 메시지 표시
       setFeedbackMessage({
         type: 'incorrect',
-        text: `정답: ${quizStringNumber}번줄 ${currentQuiz.fret}프렛` 
+        text: `틀렸습니다. (${newWrongAttempts}회 틀림)` 
       });
-      setShowCorrectAnswerHighlight(true);
-      setCorrectAnswerDetails({ string: currentQuiz.string, fret: currentQuiz.fret });
+      
+      // 3번 틀렸을 경우 정답 표시
+      if (newWrongAttempts >= 3) {
+        setShowCorrectAnswerHighlight(true);
+        setCorrectAnswerDetails({ string: currentQuiz.string, fret: currentQuiz.fret });
+        setShowAnswerLabel(true); // 지판 위에 알파벳 표시
+      }
     }
   };
 
@@ -142,8 +176,37 @@ const PracticeScreen = ({ stage, onBack }) => {
           onNoteSelect={handleNoteSelect} 
           highlightCorrectAnswer={showCorrectAnswerHighlight ? correctAnswerDetails : null}
           selectedNote={selectedNoteInfo}
+          showAnswerLabel={showAnswerLabel}
         />
       </div>
+
+      {/* 퀴즈 완료 모달 */}
+      {quizCompleted && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-xs w-full mx-4 shadow-lg">
+            <h3 className="text-lg font-bold text-white text-center mb-4">
+              연습 완료!
+            </h3>
+            <p className="text-slate-300 text-center mb-6">
+              {quizProgress.total}개의 문제를 모두 완료했습니다. 다음으로 진행하시겠습니까?
+            </p>
+            <div className="flex flex-col space-y-3">
+              <button 
+                onClick={handleRestartPractice}
+                className="w-full py-2 px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              >
+                다시 연습하기
+              </button>
+              <button 
+                onClick={onBack}
+                className="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
+              >
+                다음 단계로
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
