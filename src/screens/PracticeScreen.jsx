@@ -112,11 +112,22 @@ const PracticeScreen = ({ stage, onBack }) => {
 
     const noteName = getNote(stringIndex, fretNum);
     const noteNameWithOctave = getNoteWithOctave(stringIndex, fretNum);
-    setSelectedNoteInfo({ string: stringIndex, fret: fretNum, name: noteName, nameWithOctave: noteNameWithOctave });
+    
+    // Check if the selected note is correct
+    const isCorrect = stringIndex === currentQuiz.string && fretNum === currentQuiz.fret;
+    
+    // Set selected note with the correctness flag
+    setSelectedNoteInfo({ 
+      string: stringIndex, 
+      fret: fretNum, 
+      name: noteName, 
+      nameWithOctave: noteNameWithOctave,
+      isCorrect: isCorrect
+    });
     
     playSound(noteNameWithOctave);
 
-    if (stringIndex === currentQuiz.string && fretNum === currentQuiz.fret) {
+    if (isCorrect) {
       // 정답
       setFeedbackMessage({ type: 'correct', text: `정답입니다! ${noteName}` });
       setShowCorrectAnswerHighlight(false);

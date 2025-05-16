@@ -17,30 +17,61 @@ const TutorialView = ({ stage }) => {
     <div className="w-full flex-grow flex flex-col items-center">
       <div className="mb-4 text-center">
         <h2 className="text-xl font-bold text-white mb-2">튜토리얼 모드</h2>
-        <p className="text-slate-300">아래 위치의 음들을 학습하세요</p>
+        <p className="text-slate-300 mb-1">아래 위치의 음들을 학습하세요</p>
+        <p className="text-xs text-slate-400">각 음은 색상별로 표시됩니다 (A-G)</p>
       </div>
       
       <div className="w-full flex-grow flex justify-center items-center">
         <Fretboard 
           tutorialMode={true}
+          showAllNotes={false}
           tutorialNotes={tutorialNotes}
           onNoteSelect={() => {}} // 튜토리얼 모드에서는 클릭 이벤트 비활성화
         />
       </div>
       
+      {/* 색상별 음 범례 */}
       <div className="mt-4 w-full max-w-md">
-        <ul className="bg-slate-800 rounded-lg p-4 grid grid-cols-2 gap-2">
-          {tutorialNotes.map((note, index) => (
-            <li key={index} className="text-white flex items-center">
-              <span className="w-8 h-8 flex items-center justify-center bg-sky-600 rounded-full mr-2">
-                {note.string + 1}
-              </span>
-              <span>
-                {note.fret}프렛: <strong className="text-sky-400">{note.note}</strong>
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="bg-slate-800 rounded-lg p-4">
+          <p className="text-white text-sm mb-2 font-medium">색상별 음 범례:</p>
+          <div className="grid grid-cols-7 gap-2">
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-[#FF5252] rounded-full flex items-center justify-center">
+                <span className="text-white font-bold">A</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-[#FF9800] rounded-full flex items-center justify-center">
+                <span className="text-white font-bold">B</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-[#FFEB3B] rounded-full flex items-center justify-center">
+                <span className="text-black font-bold">C</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-[#4CAF50] rounded-full flex items-center justify-center">
+                <span className="text-white font-bold">D</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-[#2196F3] rounded-full flex items-center justify-center">
+                <span className="text-white font-bold">E</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-[#673AB7] rounded-full flex items-center justify-center">
+                <span className="text-white font-bold">F</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-[#E91E63] rounded-full flex items-center justify-center">
+                <span className="text-white font-bold">G</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
