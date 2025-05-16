@@ -1,12 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Temporarily comment out custom styling to test basic functionality */
+/*
 @layer base {
   body {
-    @apply bg-primary text-text-primary font-sans antialiased;
+    @apply bg-primary font-sans antialiased text-primary-foreground;
   }
 }
 
@@ -16,18 +15,32 @@
   }
 
   .btn-primary {
-    @apply bg-accent text-white hover:bg-opacity-90;
+    @apply bg-accent text-accent-foreground hover:bg-opacity-90;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-text-primary hover:bg-opacity-90;
+    @apply bg-card text-foreground hover:bg-opacity-90;
   }
 
   .card {
-    @apply bg-secondary rounded-xl p-6 shadow-lg;
+    @apply bg-card text-card-foreground rounded-xl p-6 shadow-lg;
   }
 
   .input {
-    @apply bg-primary border border-secondary rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent;
+    @apply bg-primary text-primary-foreground border border-card rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent;
+  }
+}
+*/
+
+/* Basic test styles */
+@layer base {
+  body {
+    @apply bg-blue-900 text-white font-sans;
+  }
+}
+
+@layer components {
+  .test-btn {
+    @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
   }
 }
