@@ -24,6 +24,16 @@ const STAGES = [
       { string: 5, fret: 5 }, // 6번줄(인덱스 5) A (5프렛)
       { string: 5, fret: 7 }  // 6번줄(인덱스 5) B (7프렛)
     ]
+  },
+  {
+    id: 3,
+    title: "3단계: 5번줄 C, D, E",
+    description: "5번줄의 C, D, E 음계를 학습합니다.",
+    quizzes: [
+      { string: 4, fret: 3 }, // 5번줄(인덱스 4) C (3프렛)
+      { string: 4, fret: 5 }, // 5번줄(인덱스 4) D (5프렛)
+      { string: 4, fret: 7 }  // 5번줄(인덱스 4) E (7프렛)
+    ]
   }
 ];
 
