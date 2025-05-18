@@ -1,3 +1,21 @@
+# 할 일
+
+- 코드 이해
+- 라우터 구성
+- Layout 재구성 - 특히, PWA 시 화면이 잘리는 현상 제거
+- 로그인 기능 구현 - firebase로 간단하게
+- 로그인에 따른 개인화 기능
+  - 개인별 진행 상황에 따른 단계를 자동 스크롤
+- 소리 기능
+- 간단한 멜로디 연주를 통해 복습하는 기능
+- 지판보고 코드 구성음 맞추기
+- 음을 들려주고 음을 맞춰보는 기능
+- 스케일 연습 기능
+- 스킨 기능
+- Donation 버튼 추가
+
+# https://fret-anki.vercel.app/
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
