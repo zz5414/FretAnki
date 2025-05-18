@@ -66,7 +66,7 @@ function App() {
   };
 
   return (
-    <div className="App bg-slate-900 w-screen h-[100dvh] max-h-[100dvh] overflow-hidden">
+    <div className="App bg-slate-900 w-screen h-[100dvh] max-h-[100dvh] overflow-y-auto">
       {renderScreen()}
     </div>
   );
