@@ -7,9 +7,17 @@ import { Howl } from "howler";
 
 const soundFiles = import.meta.glob("../assets/sounds/*.flac");
 const soundCache = {};
+let currentSound = null; // 추가: 현재 재생 중인 소리를 저장하는 전역 변수
 
 const playSound = (noteWithOctave) => {
   if (!noteWithOctave) return;
+
+  // 이전에 재생 중이던 소리가 있다면 중지
+  if (currentSound) {
+    currentSound.stop();
+    currentSound = null;
+  }
+
   const soundFileName = `${noteWithOctave.replace("#", "s")}.flac`;
   const soundPathKey = `../assets/sounds/${soundFileName}`;
   console.log(soundFileName);
@@ -17,7 +25,8 @@ const playSound = (noteWithOctave) => {
   console.log(soundCache[soundPathKey]);
 
   if (soundCache[soundPathKey]) {
-    soundCache[soundPathKey].play();
+    currentSound = soundCache[soundPathKey];
+    currentSound.play();
   } else if (soundFiles[soundPathKey]) {
     soundFiles[soundPathKey]()
       .then((module) => {
@@ -31,6 +40,7 @@ const playSound = (noteWithOctave) => {
             console.error("Howler play error:", err, `for ${soundPathKey}`),
         });
         soundCache[soundPathKey] = sound;
+        currentSound = sound;
         sound.play();
       })
       .catch((err) => {
