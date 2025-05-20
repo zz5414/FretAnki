@@ -1,6 +1,8 @@
 # 할 일
 
 - flac 파일 opus로 변환 및 최적화
+  - https://chatgpt.com/share/682c9bc7-177c-8006-8829-547ae6e69481
+  - preload또는 audio sprite를 사용하여 최적화
 - 모자란 음 채우기
 - 가상악기 사용하여 음을 내기
 - 코드 이해
