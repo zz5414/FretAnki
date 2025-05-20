@@ -4,3 +4,15 @@ A#2
 C#3
 D#3
 G#4
+
+
+아래의 명령어로 F2를 Fs2.flac으로 변환하는데 성공하였다
+여기서 1.05946 = 2^(1/12) (1 semitone ratio) 라고 한다.
+
+ffmpeg -i F2.flac -af "asetrate=44100*1.05946,aresample=44100" Fs2.flac
+
+ffmpeg -i G2.flac -af "asetrate=44100*1.05946,aresample=44100" Gs2.flac
+ffmpeg -i A2.flac -af "asetrate=44100*1.05946,aresample=44100" As2.flac
+ffmpeg -i C3.flac -af "asetrate=44100*1.05946,aresample=44100" Cs3.flac
+ffmpeg -i D3.flac -af "asetrate=44100*1.05946,aresample=44100" Ds3.flac
+ffmpeg -i G4.flac -af "asetrate=44100*1.05946,aresample=44100" Gs4.flac
