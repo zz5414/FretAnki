@@ -1,11 +1,44 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-// import './App.css' // 주석 처리 또는 삭제
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import HomeScreen from "./screens/HomeScreen";
+import StageDetailScreen from "./screens/StageDetailScreen";
+import PracticeScreen from "./screens/PracticeScreen";
+import Layout from "./components/Layout";
+import TutorialView from "./components/TutorialView";
 
-createRoot(document.getElementById('root')).render(
+const Main = () => {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <HomeScreen />,
+    },
+    {
+      element: <Layout />,
+      children: [
+        {
+          path: "/stage-detail",
+          element: <StageDetailScreen />,
+        },
+        {
+          path: "/stage-detail/tutorial",
+          element: <TutorialView />,
+        },
+        {
+          path: "/practice",
+          element: <PracticeScreen />,
+        },
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
+};
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <Main />
+  </StrictMode>
+);

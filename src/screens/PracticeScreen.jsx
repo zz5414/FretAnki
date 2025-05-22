@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Fretboard from "../components/Fretboard";
 import QuizDisplayMinimal from "../components/QuizDisplay";
 import { getNote, getNoteWithOctave } from "../utils/guitarLogic";
@@ -51,7 +52,11 @@ const playSound = (noteWithOctave) => {
   }
 };
 
-const PracticeScreen = ({ stage, onBack }) => {
+const PracticeScreen = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { stage } = location.state || {};
+
   const [quizSequence, setQuizSequence] = useState([]);
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState(null);
@@ -64,6 +69,7 @@ const PracticeScreen = ({ stage, onBack }) => {
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [showAnswerLabel, setShowAnswerLabel] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 단계별 퀴즈 시퀀스 생성
   useEffect(() => {
@@ -75,6 +81,12 @@ const PracticeScreen = ({ stage, onBack }) => {
       setCurrentQuizIndex(0);
       setQuizCompleted(false);
     }
+    // 로딩 상태를 잠시 후에 false로 설정하여 불필요한 메시지가 표시되지 않도록 함
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [stage]);
 
   // 현재 퀴즈 설정
@@ -124,9 +136,16 @@ const PracticeScreen = ({ stage, onBack }) => {
     }
   };
 
+  // Handle back button - return to stage detail
+  const handleBack = () => {
+    navigate("/stage-detail", { state: { stage } });
+  };
+
   // 노트 선택 처리
   const handleNoteSelect = (stringIndex, fretNum) => {
-    if (!currentQuiz) return;
+    if (!currentQuiz) {
+      return;
+    }
 
     const noteName = getNote(stringIndex, fretNum);
     const noteNameWithOctave = getNoteWithOctave(stringIndex, fretNum);
@@ -176,39 +195,42 @@ const PracticeScreen = ({ stage, onBack }) => {
     }
   };
 
+  // If no stage data, show an error message and a button to go back
+  if (!stage) {
+    return (
+      <div className="w-full h-[100dvh] flex flex-col items-center justify-center bg-slate-900 text-white p-4">
+        <h2 className="text-xl font-bold mb-4">
+          오류: 스테이지 데이터를 찾을 수 없습니다
+        </h2>
+        <p className="mb-6">연습을 시작하려면 스테이지를 다시 선택해주세요.</p>
+        <button
+          onClick={() => navigate("/")}
+          className="px-4 py-2 bg-blue-600 rounded-lg"
+        >
+          홈으로 돌아가기
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-slate-900 overflow-hidden">
-      {/* 상단 네비게이션 바 */}
-      <div className="w-full bg-slate-800 p-4 flex items-center justify-between pt-[calc(env(safe-area-inset-top)+1rem)]">
-        <button onClick={onBack} className="text-white flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 mr-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          뒤로
-        </button>
-
-        <div className="text-white text-sm">
-          {quizProgress.current} / {quizProgress.total}
-        </div>
-      </div>
-
       {/* 퀴즈 표시 영역 */}
       {currentQuiz && (
         <QuizDisplayMinimal
           quiz={currentQuiz}
           feedbackMessage={feedbackMessage}
+          progress={quizProgress}
         />
+      )}
+
+      {/* 로딩 중일 때 표시 */}
+      {isLoading && !currentQuiz && (
+        <div className="fixed top-2 left-1/2 -translate-x-1/2 w-auto min-w-[180px] max-w-[80%] z-20">
+          <div className="bg-slate-800 bg-opacity-75 backdrop-blur-sm shadow-lg rounded-md px-3 py-2 text-center text-xs font-medium text-slate-300 border border-slate-700">
+            퀴즈를 준비하는 중...
+          </div>
+        </div>
       )}
 
       {/* Fretboard 영역 */}
@@ -242,7 +264,7 @@ const PracticeScreen = ({ stage, onBack }) => {
                 다시 연습하기
               </button>
               <button
-                onClick={onBack}
+                onClick={handleBack}
                 className="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
               >
                 다음 단계로

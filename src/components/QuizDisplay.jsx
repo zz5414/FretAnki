@@ -1,6 +1,6 @@
 import React from 'react';
 
-const QuizDisplayMinimal = ({ quiz, feedbackMessage }) => {
+const QuizDisplayMinimal = ({ quiz, feedbackMessage, progress }) => {
   if (!quiz) {
     return (
       <div className="fixed top-2 left-1/2 -translate-x-1/2 w-auto min-w-[180px] max-w-[80%] z-20">
@@ -25,12 +25,19 @@ const QuizDisplayMinimal = ({ quiz, feedbackMessage }) => {
 
   return (
     <>
-      {/* Main Quiz Question */}
+      {/* Main Quiz Question with Progress */}
       <div className="fixed top-2 left-1/2 -translate-x-1/2 w-auto min-w-[200px] sm:min-w-[220px] max-w-[80%] z-20">
         <div className={`bg-opacity-80 backdrop-blur-sm shadow-xl rounded-md px-3 py-2 text-slate-50 border border-slate-700 transition-colors duration-300 ${quizBgColor}`}>
-          <p className="text-sm sm:text-base text-center font-semibold font-mono truncate">
-            {quiz.questionText}
-          </p>
+          <div className="flex flex-col items-center">
+            {progress && (
+              <div className="text-xs text-white/80 mb-1">
+                {progress.current} / {progress.total}
+              </div>
+            )}
+            <p className="text-sm sm:text-base text-center font-semibold font-mono truncate">
+              {quiz.questionText}
+            </p>
+          </div>
         </div>
       </div>
       

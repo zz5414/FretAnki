@@ -32,10 +32,10 @@
 }
 */
 
-/* Basic test styles */
+/* 전체 애플리케이션 기본 스타일 */
 @layer base {
   body {
-    @apply bg-blue-900 text-white font-sans;
+    @apply bg-slate-900 text-white font-sans;
   }
 }
 
