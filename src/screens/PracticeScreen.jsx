@@ -5,6 +5,7 @@ import QuizDisplayMinimal from "../components/QuizDisplay";
 import { getNote, getNoteWithOctave } from "../utils/guitarLogic";
 import { generateQuizSequence, createQuizInfo } from "../utils/quizGenerator";
 import { Howl } from "howler";
+import "../assets/responsive.css";
 
 const soundFiles = import.meta.glob("../assets/sounds/*.flac");
 const soundCache = {};
@@ -56,7 +57,34 @@ const PracticeScreen = () => {
   const navigate = useNavigate();
   const { stage } = location.state || {};
 
-  // 스크롤 방지를 위해 useEffect 제거
+  // 윈도우 크기 상태 관리
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  // 화면 크기 변경 감지
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // iPhone 14 Pro Max 가로 모드 감지
+  const isIPhone14ProMaxLandscape = () => {
+    return (
+      windowSize.width >= 920 &&
+      windowSize.width <= 940 &&
+      windowSize.height >= 420 &&
+      windowSize.height <= 440
+    );
+  };
 
   const [quizSequence, setQuizSequence] = useState([]);
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
@@ -235,7 +263,11 @@ const PracticeScreen = () => {
       )}
 
       {/* Fretboard 영역 */}
-      <div className="w-full flex-grow flex justify-center items-center overflow-hidden">
+      <div
+        className={`w-full flex-grow flex justify-center items-center overflow-hidden ${
+          isIPhone14ProMaxLandscape() ? "py-0" : "py-0"
+        } landscape-padding min-height-adjust mt-[-10px] mb-[5px]`}
+      >
         <Fretboard
           onNoteSelect={handleNoteSelect}
           highlightCorrectAnswer={

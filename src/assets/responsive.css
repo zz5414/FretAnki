@@ -1,0 +1,55 @@
+/* Responsive styles for mobile devices */
+
+/* iPhone landscape mode specific adjustments */
+@media screen and (max-height: 450px) and (orientation: landscape) {
+  /* Add padding to fretboard container */
+  .landscape-padding {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  /* Adjust overall app layout */
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Force smaller content */
+  .min-height-adjust {
+    max-height: calc(100vh - 1.5rem) !important;
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+/* iPhone 14 Pro Max specific (932x430) */
+@media screen and (min-width: 900px) and (max-height: 450px) and (orientation: landscape) {
+  .landscape-padding {
+    padding-top: 0.3rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  /* Specific iPhone 14 Pro Max adjustments */
+  html,
+  body,
+  #root {
+    height: 100%;
+    max-height: 430px;
+    overflow: hidden;
+  }
+
+  /* Add bottom margin to create space */
+  .min-height-adjust {
+    margin-bottom: 1rem !important;
+    max-height: calc(430px - 2rem) !important;
+  }
+}
+
+/* General small height devices */
+@media screen and (max-height: 500px) {
+  /* Reduce minimum height of fretboard container */
+  .min-height-adjust {
+    min-height: auto !important;
+  }
+}

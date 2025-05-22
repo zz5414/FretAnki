@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { getNote } from "../utils/guitarLogic";
 
 // Define colors for each note (A through G)
@@ -21,6 +21,25 @@ const Fretboard = ({
   showAllNotes,
   tutorialNotes,
 }) => {
+  // --- Window Size State ---
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  // Update window size on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // --- Constants ---
   const numStrings = 6;
   const numFrets = 12; // 0 (open) to 12
@@ -34,8 +53,8 @@ const Fretboard = ({
   const neckPlayableWidth =
     (svgViewBoxWidth - neckInitialStartX) * neckWidthRatio; // Playable fretboard width (nut to 12th fret end)
 
-  const neckHeight = svgViewBoxHeight * 0.9; // Neck uses 90% of SVG height, was 0.95 of 600, now 0.9 of 550
-  const neckStartY = (svgViewBoxHeight - neckHeight) / 2; // Center neck vertically
+  const neckHeight = svgViewBoxHeight * 0.92; // Neck uses 92% of SVG height to show bottom string better
+  const neckStartY = (svgViewBoxHeight - neckHeight) / 2 - 5; // Center neck vertically but shift up slightly
 
   const nutWidth = 12; // Slightly thicker nut, was 10
   const fretWireWidth = 4;
@@ -128,7 +147,7 @@ const Fretboard = ({
 
   const renderStrings = () =>
     stringThicknesses.map((thickness, index) => {
-      const stringY = neckStartY + (index + 0.75) * stringSpacing; // Adjusted for new stringSpacing logic
+      const stringY = neckStartY + (index + 0.7) * stringSpacing; // 0.7에서 0.7로 변경하여 약간 더 위로 이동
       return (
         <line
           key={`string-${index}`}
@@ -187,7 +206,7 @@ const Fretboard = ({
   };
 
   const getNotePositionCoordinates = (stringIdx, fretIdx) => {
-    const stringY = neckStartY + (stringIdx + 0.75) * stringSpacing;
+    const stringY = neckStartY + (stringIdx + 0.7) * stringSpacing; // 0.7로 변경하여 일관성 유지
     let noteX;
 
     if (fretIdx === 0) {
@@ -287,7 +306,7 @@ const Fretboard = ({
     const clickableFretWidthRatio = 0.85;
 
     for (let stringIdx = 0; stringIdx < numStrings; stringIdx++) {
-      const stringY = neckStartY + (stringIdx + 0.75) * stringSpacing;
+      const stringY = neckStartY + (stringIdx + 0.7) * stringSpacing; // 이전 수정과 일치하도록 0.7로 변경
       const clickableStringHeight = stringSpacing * 0.95;
 
       // Fret 0 (Open string)
@@ -379,10 +398,41 @@ const Fretboard = ({
     );
   };
 
+  // Function to determine if the device is iPhone 14 Pro Max in landscape
+  const isIPhone14ProMaxLandscape = () => {
+    return (
+      windowSize.width >= 920 &&
+      windowSize.width <= 940 &&
+      windowSize.height >= 420 &&
+      windowSize.height <= 440
+    );
+  };
+
   return (
     // This div should take full height from parent in App.jsx
     <div className="w-full h-full flex justify-center items-center">
-      <div className="w-[80%] max-w-[1000px] h-full flex justify-center items-center mx-auto">
+      <div
+        className={`w-[98%] max-w-[1500px] ${
+          windowSize.height <= 450 ? "h-[80%]" : "h-full"
+        } ${
+          isIPhone14ProMaxLandscape()
+            ? "max-h-[calc(100vw*0.38)]"
+            : "max-h-[calc(100vw*0.42)]"
+        } flex justify-center items-center mx-auto`}
+        style={{
+          marginBottom: isIPhone14ProMaxLandscape()
+            ? "15px"
+            : windowSize.height <= 450
+            ? "12px"
+            : "0",
+          marginTop: isIPhone14ProMaxLandscape()
+            ? "2px"
+            : windowSize.height <= 450
+            ? "2px"
+            : "0",
+          paddingBottom: windowSize.height <= 450 ? "0" : "0",
+        }}
+      >
         <svg
           viewBox={`0 0 ${svgViewBoxWidth} ${svgViewBoxHeight}`}
           preserveAspectRatio="xMidYMid meet"
