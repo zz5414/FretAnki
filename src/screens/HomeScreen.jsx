@@ -23,7 +23,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-start p-6 pt-[calc(env(safe-area-inset-top)+1.5rem)]">
+    <div className="w-full h-[100vh] flex flex-col items-center justify-start p-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] overflow-auto">
       <h1 className="text-3xl font-bold text-white mb-8">
         기타 지판 암기 학습
       </h1>

@@ -20,10 +20,10 @@ const StageDetailScreen = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-[100vh] flex flex-col overflow-hidden">
       {/* 메인 콘텐츠 영역 */}
-      <div className="flex-grow flex flex-col items-center p-6">
-        <div className="w-full max-w-md flex flex-col items-center justify-center">
+      <div className="flex-grow flex flex-col items-center justify-center p-6 overflow-hidden">
+        <div className="w-full max-w-md flex flex-col items-center">
           <h1 className="text-2xl font-bold text-white mb-4">{stage.title}</h1>
           <p className="text-slate-300 mb-8 text-center">{stage.description}</p>
 

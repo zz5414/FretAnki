@@ -57,6 +57,8 @@ const PracticeScreen = () => {
   const navigate = useNavigate();
   const { stage } = location.state || {};
 
+  // 스크롤 방지를 위해 useEffect 제거
+
   const [quizSequence, setQuizSequence] = useState([]);
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState(null);
@@ -85,7 +87,7 @@ const PracticeScreen = () => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [stage]);
 
@@ -198,7 +200,7 @@ const PracticeScreen = () => {
   // If no stage data, show an error message and a button to go back
   if (!stage) {
     return (
-      <div className="w-full h-[100dvh] flex flex-col items-center justify-center bg-slate-900 text-white p-4">
+      <div className="w-full h-[100vh] flex flex-col items-center justify-center bg-slate-900 text-white p-4 overflow-hidden">
         <h2 className="text-xl font-bold mb-4">
           오류: 스테이지 데이터를 찾을 수 없습니다
         </h2>
@@ -214,7 +216,7 @@ const PracticeScreen = () => {
   }
 
   return (
-    <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-slate-900 overflow-hidden">
+    <div className="w-full h-[100vh] flex flex-col bg-slate-900 overflow-hidden">
       {/* 퀴즈 표시 영역 */}
       {currentQuiz && (
         <QuizDisplayMinimal
@@ -234,7 +236,7 @@ const PracticeScreen = () => {
       )}
 
       {/* Fretboard 영역 */}
-      <div className="w-full flex-grow flex justify-center items-center mt-8 px-1 pb-[env(safe-area-inset-bottom)]">
+      <div className="w-full flex-grow flex justify-center items-center overflow-hidden">
         <Fretboard
           onNoteSelect={handleNoteSelect}
           highlightCorrectAnswer={

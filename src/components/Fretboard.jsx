@@ -382,22 +382,24 @@ const Fretboard = ({
   return (
     // This div should take full height from parent in App.jsx
     <div className="w-full h-full flex justify-center items-center">
-      <svg
-        viewBox={`0 0 ${svgViewBoxWidth} ${svgViewBoxHeight}`}
-        preserveAspectRatio="xMidYMid meet"
-        // className should allow it to fill the parent div from App.jsx
-        className="w-full h-full shadow-2xl bg-slate-900 overflow-visible" // Removed max-w, changed bg to match App.jsx for seamlessness
-      >
-        {renderNeckBackground()}
-        {renderNut()}
-        {renderFrets()}
-        {renderStrings()}
-        {renderFretMarkers()}
-        {renderClickableNotes()}
-        {renderUserSelectionMarker()}
-        {renderCorrectAnswerHighlightMarker()}
-        {renderColoredNoteLabels()}
-      </svg>
+      <div className="w-[80%] max-w-[1000px] h-full flex justify-center items-center mx-auto">
+        <svg
+          viewBox={`0 0 ${svgViewBoxWidth} ${svgViewBoxHeight}`}
+          preserveAspectRatio="xMidYMid meet"
+          // className should allow it to fill the parent div from App.jsx
+          className="w-full h-full shadow-2xl bg-slate-900 rounded-lg" // Added rounded-lg and removed overflow-visible
+        >
+          {renderNeckBackground()}
+          {renderNut()}
+          {renderFrets()}
+          {renderStrings()}
+          {renderFretMarkers()}
+          {renderClickableNotes()}
+          {renderUserSelectionMarker()}
+          {renderCorrectAnswerHighlightMarker()}
+          {renderColoredNoteLabels()}
+        </svg>
+      </div>
     </div>
   );
 };
