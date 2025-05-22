@@ -22,8 +22,7 @@ const playSound = (noteWithOctave) => {
   const soundFileName = `${noteWithOctave.replace("#", "s")}.flac`;
   const soundPathKey = `../assets/sounds/${soundFileName}`;
   console.log(soundFileName);
-  console.log(soundPathKey);
-  console.log(soundCache[soundPathKey]);
+  console.log("soundPathKey", soundPathKey);
 
   if (soundCache[soundPathKey]) {
     currentSound = soundCache[soundPathKey];
