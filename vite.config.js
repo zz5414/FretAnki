@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
@@ -12,7 +12,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       injectRegister: "auto",
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,mp3}"], // Ensure mp3 files are cached
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,mp3,ogg}"], // Ensure mp3 and ogg files are cached
         runtimeCaching: [
           {
             urlPattern: /^https?:\/\/.*/i, // Cache external resources if any, adjust as needed
@@ -62,4 +62,3 @@ export default defineConfig({
     }),
   ],
 });
-

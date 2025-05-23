@@ -10,6 +10,84 @@ import "../assets/responsive.css";
 const soundFiles = import.meta.glob("../assets/sounds/*.ogg");
 const soundCache = {};
 let currentSound = null; // 추가: 현재 재생 중인 소리를 저장하는 전역 변수
+let allSoundsLoaded = false; // 전체 사운드 로딩 완료 플래그
+
+// 사용 가능한 모든 사운드 파일 이름 추출
+const getAllAvailableSounds = () => {
+  const soundPaths = Object.keys(soundFiles);
+  return soundPaths.map((path) => {
+    const fileName = path.split("/").pop().replace(".ogg", "");
+    // s를 #으로 변환 (예: Fs -> F#)
+    return fileName.replace("s", "#");
+  });
+};
+
+// 사운드 미리 로드 함수
+const preloadSound = async (noteWithOctave) => {
+  if (!noteWithOctave) return null;
+
+  const soundFileName = `${noteWithOctave.replace("#", "s")}.ogg`;
+  const soundPathKey = `../assets/sounds/${soundFileName}`;
+
+  // 이미 캐시된 경우 바로 반환
+  if (soundCache[soundPathKey]) {
+    return soundCache[soundPathKey];
+  }
+
+  // 사운드 파일이 존재하는 경우 로드
+  if (soundFiles[soundPathKey]) {
+    try {
+      const module = await soundFiles[soundPathKey]();
+      const sound = new Howl({
+        src: [module.default],
+        volume: 0.7,
+        html5: true,
+        preload: true, // 미리 로드 옵션 추가
+        onloaderror: (id, err) =>
+          console.error("Howler load error:", err, `for ${soundPathKey}`),
+        onplayerror: (id, err) =>
+          console.error("Howler play error:", err, `for ${soundPathKey}`),
+      });
+
+      // 사운드 로드 완료까지 대기
+      return new Promise((resolve) => {
+        if (sound.state() === "loaded") {
+          soundCache[soundPathKey] = sound;
+          resolve(sound);
+        } else {
+          sound.once("load", () => {
+            soundCache[soundPathKey] = sound;
+            resolve(sound);
+          });
+        }
+      });
+    } catch (err) {
+      console.error(`Error loading sound module ${soundPathKey}:`, err);
+      return null;
+    }
+  }
+
+  return null;
+};
+
+// 모든 사운드를 한 번에 미리 로드하는 함수
+const preloadAllSounds = async () => {
+  if (allSoundsLoaded) {
+    return true; // 이미 로드된 경우 바로 성공 반환
+  }
+
+  const allSounds = getAllAvailableSounds();
+  const loadPromises = allSounds.map((note) => preloadSound(note));
+  try {
+    await Promise.all(loadPromises);
+    console.log(`Successfully preloaded ${allSounds.length} sounds`);
+    allSoundsLoaded = true;
+    return true;
+  } catch (err) {
+    console.error("Error preloading sounds:", err);
+    return false;
+  }
+};
 
 const playSound = (noteWithOctave) => {
   if (!noteWithOctave) return;
@@ -22,33 +100,34 @@ const playSound = (noteWithOctave) => {
 
   const soundFileName = `${noteWithOctave.replace("#", "s")}.ogg`;
   const soundPathKey = `../assets/sounds/${soundFileName}`;
-  console.log(soundFileName);
-  console.log("soundPathKey", soundPathKey);
 
+  // 캐시된 사운드가 있으면 바로 재생
   if (soundCache[soundPathKey]) {
     currentSound = soundCache[soundPathKey];
     currentSound.play();
-  } else if (soundFiles[soundPathKey]) {
-    soundFiles[soundPathKey]()
-      .then((module) => {
-        const sound = new Howl({
-          src: [module.default],
-          volume: 0.7,
-          html5: true,
-          onloaderror: (id, err) =>
-            console.error("Howler load error:", err, `for ${soundPathKey}`),
-          onplayerror: (id, err) =>
-            console.error("Howler play error:", err, `for ${soundPathKey}`),
-        });
-        soundCache[soundPathKey] = sound;
-        currentSound = sound;
-        sound.play();
-      })
-      .catch((err) => {
-        console.error(`Error loading sound module ${soundPathKey}:`, err);
-      });
   } else {
-    // console.warn(`Sound file not found: ${soundPathKey}. Ensure actual audio is present.`);
+    // 캐시되지 않은 경우 (이제 거의 발생하지 않아야 함)
+    console.warn(`Sound not preloaded: ${soundPathKey}`);
+    if (soundFiles[soundPathKey]) {
+      soundFiles[soundPathKey]()
+        .then((module) => {
+          const sound = new Howl({
+            src: [module.default],
+            volume: 0.7,
+            html5: true,
+            onloaderror: (id, err) =>
+              console.error("Howler load error:", err, `for ${soundPathKey}`),
+            onplayerror: (id, err) =>
+              console.error("Howler play error:", err, `for ${soundPathKey}`),
+          });
+          soundCache[soundPathKey] = sound;
+          currentSound = sound;
+          sound.play();
+        })
+        .catch((err) => {
+          console.error(`Error loading sound module ${soundPathKey}:`, err);
+        });
+    }
   }
 };
 
@@ -99,28 +178,43 @@ const PracticeScreen = () => {
   const [showAnswerLabel, setShowAnswerLabel] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [soundsLoaded, setSoundsLoaded] = useState(false);
 
-  // 단계별 퀴즈 시퀀스 생성
+  // 단계별 퀴즈 시퀀스 생성 및 사운드 미리 로드
   useEffect(() => {
-    if (stage && stage.quizzes) {
-      // 각 음이 최소 3번 반복되는 퀴즈 시퀀스 생성
-      const sequence = generateQuizSequence(stage.quizzes, 3);
-      setQuizSequence(sequence);
-      setQuizProgress({ current: 1, total: sequence.length });
-      setCurrentQuizIndex(0);
-      setQuizCompleted(false);
-    }
-    // 로딩 상태를 잠시 후에 false로 설정하여 불필요한 메시지가 표시되지 않도록 함
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
+    const initializeStage = async () => {
+      if (stage && stage.quizzes) {
+        setIsLoading(true);
+        setSoundsLoaded(false);
 
-    return () => clearTimeout(timer);
+        // 퀴즈 시퀀스 생성
+        const sequence = generateQuizSequence(stage.quizzes, 3);
+        setQuizSequence(sequence);
+        setQuizProgress({ current: 1, total: sequence.length });
+        setCurrentQuizIndex(0);
+        setQuizCompleted(false);
+
+        // 모든 사운드 미리 로드 (한 번만)
+        console.log("Loading all guitar note sounds...");
+        const success = await preloadAllSounds();
+
+        if (success) {
+          setSoundsLoaded(true);
+        }
+        setIsLoading(false);
+      }
+    };
+
+    initializeStage();
   }, [stage]);
 
   // 현재 퀴즈 설정
   useEffect(() => {
-    if (quizSequence.length > 0 && currentQuizIndex < quizSequence.length) {
+    if (
+      quizSequence.length > 0 &&
+      currentQuizIndex < quizSequence.length &&
+      soundsLoaded
+    ) {
       const quiz = quizSequence[currentQuizIndex];
       setCurrentQuiz(createQuizInfo(quiz, getNote));
       setSelectedNoteInfo(null);
@@ -131,7 +225,7 @@ const PracticeScreen = () => {
       setWrongAttempts(0);
       setShowAnswerLabel(false);
     }
-  }, [quizSequence, currentQuizIndex]);
+  }, [quizSequence, currentQuizIndex, soundsLoaded]);
 
   // 다음 퀴즈로 이동
   const nextQuiz = useCallback(() => {
@@ -254,10 +348,14 @@ const PracticeScreen = () => {
       )}
 
       {/* 로딩 중일 때 표시 */}
-      {isLoading && !currentQuiz && (
+      {(isLoading || !soundsLoaded) && (
         <div className="fixed top-2 left-1/2 -translate-x-1/2 w-auto min-w-[180px] max-w-[80%] z-20">
           <div className="bg-slate-800 bg-opacity-75 backdrop-blur-sm shadow-lg rounded-md px-3 py-2 text-center text-xs font-medium text-slate-300 border border-slate-700">
-            퀴즈를 준비하는 중...
+            {isLoading
+              ? "퀴즈를 준비하는 중..."
+              : !soundsLoaded
+              ? "모든 사운드를 로딩하는 중..."
+              : "준비 완료"}
           </div>
         </div>
       )}
