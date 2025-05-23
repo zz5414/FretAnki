@@ -41,6 +41,13 @@ const StageDetailScreen = () => {
             >
               연습 시작하기
             </button>
+
+            <button
+              onClick={() => navigate("/melody-practice", { state: { stage } })}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-lg font-semibold text-lg shadow-lg transition-all duration-200"
+            >
+              멜로디 연습
+            </button>
           </div>
         </div>
       </div>

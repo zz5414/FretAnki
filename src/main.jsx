@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import StageDetailScreen from "./screens/StageDetailScreen";
 import PracticeScreen from "./screens/PracticeScreen";
+import MelodyPracticeScreen from "./screens/MelodyPracticeScreen";
 import Layout from "./components/Layout";
 import TutorialView from "./components/TutorialView";
 
@@ -29,6 +30,10 @@ const Main = () => {
         {
           path: "/practice",
           element: <PracticeScreen />,
+        },
+        {
+          path: "/melody-practice",
+          element: <MelodyPracticeScreen />,
         },
       ],
     },
