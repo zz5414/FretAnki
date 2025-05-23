@@ -17,45 +17,39 @@ export const generateMelodyFromStage = (stage) => {
     noteNameWithOctave: getNoteWithOctave(quiz.string, quiz.fret),
   }));
 
-  // 중복되지 않는 고유한 음이름들을 추출
-  const uniqueNoteNames = [...new Set(stageNotes.map((note) => note.noteName))];
-  const uniqueNotes = uniqueNoteNames.map((noteName) => {
-    // 각 고유한 음이름에 대해 첫 번째로 발견되는 위치를 사용
-    return stageNotes.find((note) => note.noteName === noteName);
+  // 위치(string+fret) 기준으로 중복 제거 (음이름이 같아도 위치가 다르면 다른 것으로 취급)
+  const uniquePositions = new Set();
+  const uniqueNotes = stageNotes.filter((note) => {
+    const positionKey = `${note.string}-${note.fret}`;
+    if (uniquePositions.has(positionKey)) {
+      return false;
+    }
+    uniquePositions.add(positionKey);
+    return true;
   });
 
   const n = uniqueNotes.length;
-  const targetLength = n + Math.floor(n / 2);
+  const minLength = Math.max(8, n + Math.floor(n / 2)); // 최소 8개 보장
 
-  // 모든 고유한 음이 최소 한 번은 포함되도록 시작
+  // 모든 고유한 위치가 최소 한 번은 포함되도록 시작
   const melody = [...uniqueNotes];
 
-  // 남은 자리를 랜덤하게 채움 (중복 허용하지 않음)
-  while (melody.length < targetLength) {
+  // 남은 자리를 랜덤하게 채움
+  while (melody.length < minLength) {
+    // 사용 가능한 음표들 중에서 선택 (연속된 같은 위치만 방지)
+    const lastNote = melody[melody.length - 1];
     const availableNotes = uniqueNotes.filter(
       (note) =>
-        !melody.some(
-          (melodyNote) =>
-            melodyNote.string === note.string && melodyNote.fret === note.fret
-        )
+        !(lastNote.string === note.string && lastNote.fret === note.fret)
     );
 
-    if (availableNotes.length === 0) {
-      // 더 이상 추가할 고유한 음이 없으면 기존 음 중에서 선택
-      const randomNote =
-        uniqueNotes[Math.floor(Math.random() * uniqueNotes.length)];
-      // 연속된 같은 음이 오지 않도록 체크
-      const lastNote = melody[melody.length - 1];
-      if (
-        lastNote.string !== randomNote.string ||
-        lastNote.fret !== randomNote.fret
-      ) {
-        melody.push(randomNote);
-      }
-    } else {
+    if (availableNotes.length > 0) {
       const randomNote =
         availableNotes[Math.floor(Math.random() * availableNotes.length)];
       melody.push(randomNote);
+    } else {
+      // 모든 음표가 마지막 음표와 같은 경우 (거의 발생하지 않음)
+      break;
     }
   }
 
