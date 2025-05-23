@@ -20,6 +20,8 @@ const Fretboard = ({
   tutorialMode,
   showAllNotes,
   tutorialNotes,
+  showLocationHints = false,
+  hintLocations = [],
 }) => {
   // --- Window Size State ---
   const [windowSize, setWindowSize] = useState({
@@ -219,6 +221,37 @@ const Fretboard = ({
     }
 
     return { x: noteX, y: stringY };
+  };
+
+  const renderLocationHints = () => {
+    if (!showLocationHints || !hintLocations || hintLocations.length === 0) {
+      return [];
+    }
+
+    const hints = [];
+
+    hintLocations.forEach((location, index) => {
+      const { x, y } = getNotePositionCoordinates(
+        location.string,
+        location.fret
+      );
+
+      hints.push(
+        <circle
+          key={`location-hint-${index}`}
+          cx={x}
+          cy={y}
+          r={noteMarkerRadius * 0.8} // 조금 작게
+          fill="rgba(148, 163, 184, 0.3)" // 회색 반투명 (slate-400 with opacity)
+          stroke="rgba(148, 163, 184, 0.6)" // 회색 테두리
+          strokeWidth="1.5"
+          style={{ pointerEvents: "none" }}
+          className="transition-all duration-200"
+        />
+      );
+    });
+
+    return hints;
   };
 
   const renderColoredNoteLabels = () => {
@@ -444,6 +477,7 @@ const Fretboard = ({
           {renderFrets()}
           {renderStrings()}
           {renderFretMarkers()}
+          {renderLocationHints()}
           {renderClickableNotes()}
           {renderUserSelectionMarker()}
           {renderCorrectAnswerHighlightMarker()}

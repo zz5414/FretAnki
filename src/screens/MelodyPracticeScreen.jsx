@@ -22,6 +22,7 @@ const MelodyPracticeScreen = () => {
   const [selectedNoteInfo, setSelectedNoteInfo] = useState(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showHints, setShowHints] = useState(false);
 
   // 멜로디 전체 재생 함수
   const playMelody = async () => {
@@ -63,6 +64,13 @@ const MelodyPracticeScreen = () => {
       </div>
     );
   }
+
+  // 스테이지의 문제 위치들을 tutorialNotes 형식으로 변환
+  const hintNotes = stage.quizzes.map((quiz) => ({
+    string: quiz.string,
+    fret: quiz.fret,
+    note: getNote(quiz.string, quiz.fret),
+  }));
 
   // 현재 연주해야 할 음표
   const currentTargetNote =
@@ -161,11 +169,25 @@ const MelodyPracticeScreen = () => {
 
   return (
     <div className="w-full h-[100vh] flex flex-col overflow-hidden bg-slate-900">
-      {/* 제목 */}
-      <div className="flex-shrink-0 text-center p-4">
+      {/* 제목과 힌트 토글 */}
+      <div className="flex-shrink-0 flex items-center justify-between p-4">
+        <div></div> {/* 왼쪽 공간 */}
         <h1 className="text-xl font-bold text-white">
           {stage.title} - 멜로디 연습
         </h1>
+        <button
+          onClick={() => setShowHints(!showHints)}
+          className={`
+            px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
+            ${
+              showHints
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-slate-600 hover:bg-slate-500 text-slate-300"
+            }
+          `}
+        >
+          {showHints ? "💡 힌트 켜짐" : "💡 힌트"}
+        </button>
       </div>
 
       {/* 멜로디 표시 영역 */}
@@ -186,6 +208,8 @@ const MelodyPracticeScreen = () => {
             showCorrectAnswerHighlight ? correctAnswerDetails : null
           }
           showAnswerLabel={showCorrectAnswerHighlight}
+          showLocationHints={showHints}
+          hintLocations={showHints ? hintNotes : []}
         />
       </div>
 
