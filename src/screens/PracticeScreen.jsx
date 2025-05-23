@@ -7,7 +7,7 @@ import { generateQuizSequence, createQuizInfo } from "../utils/quizGenerator";
 import { Howl } from "howler";
 import "../assets/responsive.css";
 
-const soundFiles = import.meta.glob("../assets/sounds/*.flac");
+const soundFiles = import.meta.glob("../assets/sounds/*.ogg");
 const soundCache = {};
 let currentSound = null; // 추가: 현재 재생 중인 소리를 저장하는 전역 변수
 
@@ -20,7 +20,7 @@ const playSound = (noteWithOctave) => {
     currentSound = null;
   }
 
-  const soundFileName = `${noteWithOctave.replace("#", "s")}.flac`;
+  const soundFileName = `${noteWithOctave.replace("#", "s")}.ogg`;
   const soundPathKey = `../assets/sounds/${soundFileName}`;
   console.log(soundFileName);
   console.log("soundPathKey", soundPathKey);

@@ -103,3 +103,43 @@
 5번줄,A2,As2,B2,C3,Cs3,D3,Ds3,E3,F3,Fs3,G3,Gs3,A3
 6번줄,E2,F2,Fs2,G2,Gs2,A2,As2,B2,C3,Cs3,D3,Ds3,E3
 
+
+아래 명령어로 flac 파일을 ogg로 변환하여 용량 10분의 1로 줄였음
+
+ffmpeg -i G2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 G2.ogg
+ffmpeg -i G3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 G3.ogg
+ffmpeg -i G4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 G4.ogg
+ffmpeg -i Gs2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Gs2.ogg
+ffmpeg -i Gs3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Gs3.ogg
+ffmpeg -i Gs4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Gs4.ogg
+ffmpeg -i A2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 A2.ogg
+ffmpeg -i A3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 A3.ogg
+ffmpeg -i A4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 A4.ogg
+ffmpeg -i As2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 As2.ogg
+ffmpeg -i As3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 As3.ogg
+ffmpeg -i As4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 As4.ogg
+ffmpeg -i B2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 B2.ogg
+ffmpeg -i B3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 B3.ogg
+ffmpeg -i B4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 B4.ogg
+ffmpeg -i C3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 C3.ogg
+ffmpeg -i C4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 C4.ogg
+ffmpeg -i C5.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 C5.ogg
+ffmpeg -i Cs3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Cs3.ogg
+ffmpeg -i Cs4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Cs4.ogg
+ffmpeg -i Cs5.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Cs5.ogg
+ffmpeg -i D3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 D3.ogg
+ffmpeg -i D4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 D4.ogg
+ffmpeg -i D5.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 D5.ogg
+ffmpeg -i Ds3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Ds3.ogg
+ffmpeg -i Ds4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Ds4.ogg
+ffmpeg -i Ds5.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Ds5.ogg
+ffmpeg -i E2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 E2.ogg
+ffmpeg -i E3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 E3.ogg
+ffmpeg -i E4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 E4.ogg
+ffmpeg -i E5.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 E5.ogg
+ffmpeg -i F2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 F2.ogg
+ffmpeg -i F3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 F3.ogg
+ffmpeg -i F4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 F4.ogg
+ffmpeg -i Fs2.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Fs2.ogg
+ffmpeg -i Fs3.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Fs3.ogg
+ffmpeg -i Fs4.flac  -c:a libopus -b:a 32K -ac 1 -ar 16000 Fs4.ogg

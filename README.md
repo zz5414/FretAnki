@@ -24,6 +24,7 @@
 - 음표로 학습 기능
 - 스킨 기능
 - Donation 버튼 추가
+- 가상 소리
 
 # https://fret-anki.vercel.app/
 
