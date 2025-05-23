@@ -79,7 +79,12 @@ const Layout = () => {
         >
           Back
         </button>
-        <h1 className="ml-4 text-lg font-bold">FretAnki</h1>
+        <button
+          onClick={() => navigate("/")}
+          className="ml-4 text-lg font-bold hover:text-sky-400 transition-colors duration-200 cursor-pointer"
+        >
+          FretAnki
+        </button>
         {!isOnPracticePage && !isOnMelodyPracticePage && (
           <button
             className="start-button text-white bg-green-500 px-4 py-2 rounded"
