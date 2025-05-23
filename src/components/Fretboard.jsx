@@ -443,7 +443,7 @@ const Fretboard = ({
 
   return (
     // This div should take full height from parent in App.jsx
-    <div className="w-full h-full flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-start">
       <div
         className={`w-[98%] max-w-[1500px] ${
           windowSize.height <= 450 ? "h-[80%]" : "h-full"
@@ -451,7 +451,7 @@ const Fretboard = ({
           isIPhone14ProMaxLandscape()
             ? "max-h-[calc(100vw*0.38)]"
             : "max-h-[calc(100vw*0.42)]"
-        } flex justify-center items-center mx-auto`}
+        } flex justify-center items-start mx-auto`}
         style={{
           marginBottom: isIPhone14ProMaxLandscape()
             ? "15px"

@@ -33,8 +33,8 @@ const MelodyPracticeScreen = () => {
       const noteWithOctave = getNoteWithOctave(note.string, note.fret);
       if (noteWithOctave) {
         playSound(noteWithOctave);
-        // 음표 간 간격 (500ms)
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // 음표 간 간격 (300ms로 단축)
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
     }
   };
@@ -170,15 +170,15 @@ const MelodyPracticeScreen = () => {
   return (
     <div className="w-full h-[100vh] flex flex-col overflow-hidden bg-slate-900">
       {/* 제목과 힌트 토글 */}
-      <div className="flex-shrink-0 flex items-center justify-between p-4">
+      <div className="flex-shrink-0 flex items-center justify-between p-2">
         <div></div> {/* 왼쪽 공간 */}
-        <h1 className="text-xl font-bold text-white">
+        <h1 className="text-lg font-bold text-white">
           {stage.title} - 멜로디 연습
         </h1>
         <button
           onClick={() => setShowHints(!showHints)}
           className={`
-            px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
+            px-3 py-1.5 rounded-lg font-medium text-sm transition-all duration-200
             ${
               showHints
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
@@ -190,27 +190,30 @@ const MelodyPracticeScreen = () => {
         </button>
       </div>
 
-      {/* 멜로디 표시 영역 */}
-      <div className="flex-shrink-0">
-        <MelodyNotes
-          melody={melody}
-          playedCount={playedCount}
-          onPlayMelody={playMelody}
-        />
-      </div>
+      {/* 기타 지판과 멜로디 - 간격 최소화 */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* 멜로디 표시 영역 - 상단 고정, 최소 패딩 */}
+        <div className="flex-shrink-0 px-2 pb-1">
+          <MelodyNotes
+            melody={melody}
+            playedCount={playedCount}
+            onPlayMelody={playMelody}
+          />
+        </div>
 
-      {/* 기타 지판 */}
-      <div className="flex-grow flex items-center justify-center overflow-hidden">
-        <Fretboard
-          onNoteSelect={handleNoteSelect}
-          selectedNote={selectedNoteInfo}
-          highlightCorrectAnswer={
-            showCorrectAnswerHighlight ? correctAnswerDetails : null
-          }
-          showAnswerLabel={showCorrectAnswerHighlight}
-          showLocationHints={showHints}
-          hintLocations={showHints ? hintNotes : []}
-        />
+        {/* 기타 지판 - 멜로디 바로 아래, 간격 최소 */}
+        <div className="flex-1 overflow-hidden px-2">
+          <Fretboard
+            onNoteSelect={handleNoteSelect}
+            selectedNote={selectedNoteInfo}
+            highlightCorrectAnswer={
+              showCorrectAnswerHighlight ? correctAnswerDetails : null
+            }
+            showAnswerLabel={showCorrectAnswerHighlight}
+            showLocationHints={showHints}
+            hintLocations={showHints ? hintNotes : []}
+          />
+        </div>
       </div>
 
       {/* 완료 모달 */}
