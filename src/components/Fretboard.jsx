@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { getNote } from "../utils/guitarLogic";
 
 // Define colors for each note (A through G)
@@ -23,86 +23,11 @@ const Fretboard = ({
   showLocationHints = false,
   hintLocations = [],
 }) => {
-  // --- Window Size State ---
-  const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
-
-  // Update window size on resize
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // --- Constants ---
   const numStrings = 6;
-  const numFrets = 12; // 0 (open) to 12
+  const numFrets = 12;
 
-  // --- Dimensions (Horizontal Layout) ---
-  const svgViewBoxWidth = 1250; // Slightly increased for better proportion with increased height
-  const svgViewBoxHeight = 550; // Increased height for a fuller look, was 300 then 600, trying 550
-
-  const neckInitialStartX = 25; // Reduced start X for the neck to use more width, was 50
-  const neckWidthRatio = 0.95; // Percentage of SVG width for the neck itself (excluding 0-fret area)
-  const neckPlayableWidth =
-    (svgViewBoxWidth - neckInitialStartX) * neckWidthRatio; // Playable fretboard width (nut to 12th fret end)
-
-  const neckHeight = svgViewBoxHeight * 0.92; // Neck uses 92% of SVG height to show bottom string better
-  const neckStartY = (svgViewBoxHeight - neckHeight) / 2 - 5; // Center neck vertically but shift up slightly
-
-  const nutWidth = 12; // Slightly thicker nut, was 10
-  const fretWireWidth = 4;
-  const stringSpacing = neckHeight / (numStrings + 0.5); // Adjusted for tighter packing, was numStrings + 1
-  const fretMarkerRadius = Math.min(stringSpacing / 3.5, 10); // Adjusted, was /3, 8
-  const noteMarkerRadius = Math.min(stringSpacing / 2.8, 16); // Increased size for better visibility
-  const correctAnswerMarkerRadius = Math.min(stringSpacing / 2.5, 18); // Increased size for better visibility
-
-  // --- String Thicknesses (1st string (thin) at top, 6th string (thick) at bottom) ---
-  const baseStringThickness = Math.max(1.5, neckHeight / 120); // Adjusted for new neckHeight
-  const stringThicknesses = [
-    baseStringThickness * 0.65, // 1st string (high E)
-    baseStringThickness * 0.75, // 2nd string (B)
-    baseStringThickness * 0.88, // 3rd string (G)
-    baseStringThickness * 1.0, // 4th string (D)
-    baseStringThickness * 1.18, // 5th string (A)
-    baseStringThickness * 1.35, // 6th string (low E)
-  ];
-
-  // --- Fret Spacing (Horizontal) ---
-  const scaleLength = neckPlayableWidth * 1.5;
-  const distNutTo12thFretWire =
-    scaleLength - scaleLength / Math.pow(2, 12 / 12);
-
-  const fretPositionsFromNut = [];
-  for (let i = 1; i <= numFrets; i++) {
-    let dist = scaleLength - scaleLength / Math.pow(2, i / 12);
-    fretPositionsFromNut.push(
-      (dist / distNutTo12thFretWire) * neckPlayableWidth
-    );
-  }
-
-  // Define a minimal width for the 0-fret clickable area, conceptually before the nut visually
-  // Or, make it part of the nut area. For simplicity, let's make it very small or integrate with nut.
-  const zeroFretClickableZoneWidth = fretPositionsFromNut[0] * 0.3; // Small area to the left of the nut for open strings
-  const neckVisualStartActualX = neckInitialStartX;
-  const nutXPosition =
-    neckVisualStartActualX + zeroFretClickableZoneWidth + nutWidth / 2;
-  const fretboardVisualStartX = nutXPosition + nutWidth / 2; // Fret 1 starts after the nut
-
-  const fretWireXPositions = fretPositionsFromNut.map(
-    (p) => fretboardVisualStartX + p
-  );
-
-  // --- Fret Markers ---
-  const fretMarkerPositions = [3, 5, 7, 9, 12];
+  // 프렛 마커가 있는 프렛들
+  const fretMarkers = [3, 5, 7, 9, 12];
   const doubleDotFret = 12;
 
   const handleNoteClick = (stringIndex, fretNum) => {
@@ -111,378 +36,253 @@ const Fretboard = ({
     }
   };
 
-  const renderNeckBackground = () => (
-    <rect
-      x={neckVisualStartActualX}
-      y={neckStartY}
-      width={zeroFretClickableZoneWidth + nutWidth + neckPlayableWidth + 10} // Extend slightly for visual completeness
-      height={neckHeight}
-      fill="#503018" // Darker, richer wood color like Rosewood/Ebony from image
-      className="rounded-sm shadow-lg"
-    />
-  );
-
-  const renderNut = () => (
-    <rect
-      x={nutXPosition - nutWidth / 2}
-      y={neckStartY}
-      width={nutWidth}
-      height={neckHeight}
-      fill="#F0E68C" // Khaki/Aged Bone color for nut
-      className="shadow-sm"
-    />
-  );
-
-  const renderFrets = () =>
-    fretWireXPositions.map((fretX, index) => (
-      <line
-        key={`fret-${index + 1}`}
-        x1={fretX}
-        y1={neckStartY}
-        x2={fretX}
-        y2={neckStartY + neckHeight}
-        stroke="#C0C0C0" // Brighter silver for frets
-        strokeWidth={fretWireWidth}
-        className="shadow-xs"
-      />
-    ));
-
-  const renderStrings = () =>
-    stringThicknesses.map((thickness, index) => {
-      const stringY = neckStartY + (index + 0.7) * stringSpacing; // 0.7에서 0.7로 변경하여 약간 더 위로 이동
-      return (
-        <line
-          key={`string-${index}`}
-          x1={neckVisualStartActualX + zeroFretClickableZoneWidth / 2} // Start from within 0-fret area or nut
-          y1={stringY}
-          x2={fretboardVisualStartX + neckPlayableWidth + 5} // Extend slightly past last fret
-          y2={stringY}
-          stroke="#EAEAEA" // Light steel color for strings
-          strokeWidth={thickness}
-          opacity="0.85"
-        />
-      );
-    });
-
-  const renderFretMarkers = () => {
-    const markers = [];
-    fretMarkerPositions.forEach((fretNum) => {
-      const xPrevFretWire =
-        fretNum === 1 ? fretboardVisualStartX : fretWireXPositions[fretNum - 2];
-      const xCurrFretWire = fretWireXPositions[fretNum - 1];
-      const markerX = xPrevFretWire + (xCurrFretWire - xPrevFretWire) / 2;
-
-      if (fretNum === doubleDotFret) {
-        markers.push(
-          <circle
-            key={`marker-double-${fretNum}-1`}
-            cx={markerX}
-            cy={neckStartY + neckHeight * 0.3}
-            r={fretMarkerRadius * 1.1}
-            fill="#D0C8B0"
-            opacity="0.95"
-          />,
-          <circle
-            key={`marker-double-${fretNum}-2`}
-            cx={markerX}
-            cy={neckStartY + neckHeight * 0.7}
-            r={fretMarkerRadius * 1.1}
-            fill="#D0C8B0"
-            opacity="0.95"
-          />
-        );
-      } else {
-        markers.push(
-          <circle
-            key={`marker-${fretNum}`}
-            cx={markerX}
-            cy={neckStartY + neckHeight / 2}
-            r={fretMarkerRadius}
-            fill="#D0C8B0"
-            opacity="0.95"
-          />
+  // 노트를 표시할지 결정하는 함수
+  const shouldShowNote = (stringIdx, fretIdx) => {
+    if (tutorialMode) {
+      if (tutorialNotes && tutorialNotes.length > 0) {
+        return tutorialNotes.some(
+          (note) => note.string === stringIdx && note.fret === fretIdx
         );
       }
-    });
-    return markers;
-  };
-
-  const getNotePositionCoordinates = (stringIdx, fretIdx) => {
-    const stringY = neckStartY + (stringIdx + 0.7) * stringSpacing; // 0.7로 변경하여 일관성 유지
-    let noteX;
-
-    if (fretIdx === 0) {
-      noteX = neckVisualStartActualX + zeroFretClickableZoneWidth / 2;
-    } else {
-      const prevFretWireX =
-        fretIdx === 1 ? fretboardVisualStartX : fretWireXPositions[fretIdx - 2];
-      const currentFretWireX = fretWireXPositions[fretIdx - 1];
-      noteX = prevFretWireX + (currentFretWireX - prevFretWireX) / 2;
-    }
-
-    return { x: noteX, y: stringY };
-  };
-
-  const renderLocationHints = () => {
-    if (!showLocationHints || !hintLocations || hintLocations.length === 0) {
-      return [];
-    }
-
-    const hints = [];
-
-    hintLocations.forEach((location, index) => {
-      const { x, y } = getNotePositionCoordinates(
-        location.string,
-        location.fret
-      );
-
-      hints.push(
-        <circle
-          key={`location-hint-${index}`}
-          cx={x}
-          cy={y}
-          r={noteMarkerRadius * 0.8} // 조금 작게
-          fill="rgba(148, 163, 184, 0.3)" // 회색 반투명 (slate-400 with opacity)
-          stroke="rgba(148, 163, 184, 0.6)" // 회색 테두리
-          strokeWidth="1.5"
-          style={{ pointerEvents: "none" }}
-          className="transition-all duration-200"
-        />
-      );
-    });
-
-    return hints;
-  };
-
-  const renderColoredNoteLabels = () => {
-    const labels = [];
-
-    // Decide which notes to display
-    const shouldShowNote = (stringIdx, fretIdx) => {
-      // In tutorial mode, only show notes included in tutorialNotes
-      if (tutorialMode) {
-        if (tutorialNotes && tutorialNotes.length > 0) {
-          // Check if this position exists in tutorialNotes
-          return tutorialNotes.some(
-            (note) => note.string === stringIdx && note.fret === fretIdx
-          );
-        }
-        return false;
-      }
-
-      // In practice mode with showAllNotes, show all notes
-      if (showAllNotes) return true;
-
-      // Show note if it's the correct answer and showAnswerLabel is true
-      if (
-        showAnswerLabel &&
-        highlightCorrectAnswer &&
-        highlightCorrectAnswer.string === stringIdx &&
-        highlightCorrectAnswer.fret === fretIdx
-      ) {
-        return true;
-      }
-
       return false;
-    };
-
-    for (let stringIdx = 0; stringIdx < numStrings; stringIdx++) {
-      for (let fretIdx = 0; fretIdx <= numFrets; fretIdx++) {
-        if (!shouldShowNote(stringIdx, fretIdx)) continue;
-
-        const note = getNote(stringIdx, fretIdx);
-        const baseNote = note.charAt(0); // Get the base note (A-G) without sharps/flats
-        const { x, y } = getNotePositionCoordinates(stringIdx, fretIdx);
-
-        // Get color for the note (default to white if not found)
-        const circleColor = NOTE_COLORS[baseNote] || "#FFFFFF";
-
-        // Darker text color for bright backgrounds (yellow), white for others
-        const textColor = baseNote === "C" ? "#000000" : "#FFFFFF";
-
-        labels.push(
-          <g
-            key={`note-label-${stringIdx}-${fretIdx}`}
-            style={{ pointerEvents: "none" }}
-          >
-            <circle
-              cx={x}
-              cy={y}
-              r={noteMarkerRadius}
-              fill={circleColor}
-              stroke="#FFFFFF"
-              strokeWidth="1.5"
-              className="drop-shadow-md"
-            />
-            <text
-              x={x}
-              y={y}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fill={textColor}
-              fontFamily="monospace"
-              fontWeight="bold"
-              fontSize={Math.min(stringSpacing / 2.8, 15)}
-            >
-              {note}
-            </text>
-          </g>
-        );
-      }
     }
 
-    return labels;
-  };
+    if (showAllNotes) return true;
 
-  const renderClickableNotes = () => {
-    const notes = [];
-    const clickableFretWidthRatio = 0.85;
-
-    for (let stringIdx = 0; stringIdx < numStrings; stringIdx++) {
-      const stringY = neckStartY + (stringIdx + 0.7) * stringSpacing; // 이전 수정과 일치하도록 0.7로 변경
-      const clickableStringHeight = stringSpacing * 0.95;
-
-      // Fret 0 (Open string)
-      const openStringXCenter =
-        neckVisualStartActualX + zeroFretClickableZoneWidth / 2;
-      const openStringClickableWidth = zeroFretClickableZoneWidth * 0.9;
-      notes.push(
-        <rect
-          key={`note-${stringIdx}-0`}
-          x={openStringXCenter - openStringClickableWidth / 2}
-          y={stringY - clickableStringHeight / 2}
-          width={openStringClickableWidth}
-          height={clickableStringHeight}
-          fill="transparent"
-          onClick={() => handleNoteClick(stringIdx, 0)}
-          className="cursor-pointer hover:bg-white/5 transition-colors duration-100 ease-in-out"
-        />
-      );
-
-      for (let fretIdx = 1; fretIdx <= numFrets; fretIdx++) {
-        const prevFretWireX =
-          fretIdx === 1
-            ? fretboardVisualStartX
-            : fretWireXPositions[fretIdx - 2];
-        const currentFretWireX = fretWireXPositions[fretIdx - 1];
-        const fretSpaceWidth = currentFretWireX - prevFretWireX;
-        const clickableWidth = fretSpaceWidth * clickableFretWidthRatio;
-        const xCenter = prevFretWireX + fretSpaceWidth / 2;
-
-        notes.push(
-          <rect
-            key={`note-${stringIdx}-${fretIdx}`}
-            x={xCenter - clickableWidth / 2}
-            y={stringY - clickableStringHeight / 2}
-            width={clickableWidth}
-            height={clickableStringHeight}
-            fill="transparent"
-            onClick={() => handleNoteClick(stringIdx, fretIdx)}
-            className="cursor-pointer hover:bg-white/5 transition-colors duration-100 ease-in-out"
-          />
-        );
-      }
+    if (
+      showAnswerLabel &&
+      highlightCorrectAnswer &&
+      highlightCorrectAnswer.string === stringIdx &&
+      highlightCorrectAnswer.fret === fretIdx
+    ) {
+      return true;
     }
-    return notes;
+
+    return false;
   };
 
-  const renderUserSelectionMarker = () => {
-    if (!propSelectedNote) return null;
-
-    const { string, fret, isCorrect } = propSelectedNote;
-    const { x, y } = getNotePositionCoordinates(string, fret);
-
-    // If isCorrect is explicitly set to true, use green, otherwise use red
-    const fillColor = isCorrect
-      ? "rgba(52, 211, 153, 0.75)"
-      : "rgba(239, 68, 68, 0.75)";
-
-    return (
-      <circle
-        cx={x}
-        cy={y}
-        r={noteMarkerRadius}
-        fill={fillColor}
-        stroke="#FFFFFF"
-        strokeWidth="2"
-        style={{ pointerEvents: "none" }}
-        className="transition-all duration-150"
-      />
+  // 위치 힌트를 표시할지 확인
+  const shouldShowHint = (stringIdx, fretIdx) => {
+    if (!showLocationHints || !hintLocations || hintLocations.length === 0) {
+      return false;
+    }
+    return hintLocations.some(
+      (location) => location.string === stringIdx && location.fret === fretIdx
     );
   };
 
-  const renderCorrectAnswerHighlightMarker = () => {
-    if (!highlightCorrectAnswer) return null;
-
-    const { string, fret } = highlightCorrectAnswer;
-    const { x, y } = getNotePositionCoordinates(string, fret);
-
+  // 선택된 노트인지 확인
+  const isSelectedNote = (stringIdx, fretIdx) => {
     return (
-      <circle
-        cx={x}
-        cy={y}
-        r={correctAnswerMarkerRadius}
-        fill="none"
-        stroke="rgba(220, 38, 38, 0.9)"
-        strokeWidth="3.5"
-        style={{ pointerEvents: "none" }}
-        className="transition-all duration-150"
-      />
+      propSelectedNote &&
+      propSelectedNote.string === stringIdx &&
+      propSelectedNote.fret === fretIdx
     );
   };
 
-  // Function to determine if the device is iPhone 14 Pro Max in landscape
-  const isIPhone14ProMaxLandscape = () => {
+  // 정답 하이라이트인지 확인
+  const isCorrectAnswer = (stringIdx, fretIdx) => {
     return (
-      windowSize.width >= 920 &&
-      windowSize.width <= 940 &&
-      windowSize.height >= 420 &&
-      windowSize.height <= 440
+      highlightCorrectAnswer &&
+      highlightCorrectAnswer.string === stringIdx &&
+      highlightCorrectAnswer.fret === fretIdx
     );
   };
 
   return (
-    // This div should take full height from parent in App.jsx
-    <div className="w-full h-full flex justify-center items-start">
-      <div
-        className={`w-[98%] max-w-[1500px] ${
-          windowSize.height <= 450 ? "h-[80%]" : "h-full"
-        } ${
-          isIPhone14ProMaxLandscape()
-            ? "max-h-[calc(100vw*0.38)]"
-            : "max-h-[calc(100vw*0.42)]"
-        } flex justify-center items-start mx-auto`}
-        style={{
-          marginBottom: isIPhone14ProMaxLandscape()
-            ? "15px"
-            : windowSize.height <= 450
-            ? "12px"
-            : "0",
-          marginTop: isIPhone14ProMaxLandscape()
-            ? "2px"
-            : windowSize.height <= 450
-            ? "2px"
-            : "0",
-          paddingBottom: windowSize.height <= 450 ? "0" : "0",
-        }}
-      >
-        <svg
-          viewBox={`0 0 ${svgViewBoxWidth} ${svgViewBoxHeight}`}
-          preserveAspectRatio="xMidYMid meet"
-          // className should allow it to fill the parent div from App.jsx
-          className="w-full h-full shadow-2xl bg-slate-900 rounded-lg" // Added rounded-lg and removed overflow-visible
-        >
-          {renderNeckBackground()}
-          {renderNut()}
-          {renderFrets()}
-          {renderStrings()}
-          {renderFretMarkers()}
-          {renderLocationHints()}
-          {renderClickableNotes()}
-          {renderUserSelectionMarker()}
-          {renderCorrectAnswerHighlightMarker()}
-          {renderColoredNoteLabels()}
-        </svg>
+    <div className="w-full h-full flex justify-center items-start py-4">
+      <div className="w-full max-w-[1200px] mx-auto">
+        {/* 프렛보드 메인 컨테이너 */}
+        <div className="relative bg-amber-800 rounded-lg shadow-2xl overflow-hidden">
+          {/* 프렛보드 배경 (기타 넥) */}
+          <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 bg-gradient-to-b from-amber-800 to-amber-900">
+            {/* 기타 줄들 */}
+            {Array.from({ length: numStrings }, (_, stringIndex) => (
+              <div
+                key={`string-${stringIndex}`}
+                className="absolute left-0 right-0 bg-gray-300 z-30"
+                style={{
+                  top: `${((stringIndex + 0.5) / numStrings) * 100}%`,
+                  height: `${1.5 + stringIndex * 0.5}px`,
+                  transform: "translateY(-50%)",
+                  boxShadow:
+                    "0 2px 4px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3)",
+                  background:
+                    "linear-gradient(to bottom, #d1d5db, #9ca3af, #6b7280)",
+                }}
+              ></div>
+            ))}
+
+            {/* 너트 (0프렛과 1프렛 사이의 굵은 선) */}
+            <div
+              className="absolute top-0 bottom-0 w-4 bg-yellow-50 z-20"
+              style={{
+                left: "7%",
+                boxShadow:
+                  "2px 0 4px rgba(0, 0, 0, 0.4), inset -2px 0 3px rgba(0, 0, 0, 0.2)",
+                background:
+                  "linear-gradient(to right, #fefce8, #fef3c7, #fefce8)",
+              }}
+            ></div>
+
+            {/* 프렛 와이어들 (1-12프렛) - 더 선명하고 밝은 은색 */}
+            {Array.from({ length: numFrets }, (_, fretIndex) => (
+              <div
+                key={`fret-wire-${fretIndex + 1}`}
+                className="absolute top-0 bottom-0 w-1 bg-gray-50 z-25"
+                style={{
+                  left: `${7 + ((fretIndex + 1) / numFrets) * 86}%`,
+                  boxShadow:
+                    "inset 1px 0 2px rgba(0, 0, 0, 0.3), inset -1px 0 2px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.9)",
+                  background:
+                    "linear-gradient(to right, #f8fafc, #e2e8f0, #f8fafc)",
+                }}
+              ></div>
+            ))}
+
+            {/* 프렛 마커들 */}
+            {fretMarkers.map((fretNum) => (
+              <div
+                key={`fret-marker-${fretNum}`}
+                className="absolute z-5"
+                style={{
+                  left: `${7 + ((fretNum - 0.5) / numFrets) * 86}%`,
+                  top: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                {fretNum === doubleDotFret ? (
+                  <>
+                    <div className="w-3 h-3 bg-yellow-200 rounded-full mb-3 opacity-60"></div>
+                    <div className="w-3 h-3 bg-yellow-200 rounded-full opacity-60"></div>
+                  </>
+                ) : (
+                  <div className="w-3 h-3 bg-yellow-200 rounded-full opacity-60"></div>
+                )}
+              </div>
+            ))}
+
+            {/* 클릭 가능한 영역들과 노트 표시 */}
+            {Array.from({ length: numStrings }, (_, stringIndex) => (
+              <div
+                key={`string-row-${stringIndex}`}
+                className="absolute w-full"
+                style={{
+                  top: `${(stringIndex / numStrings) * 100}%`,
+                  height: `${100 / numStrings}%`,
+                }}
+              >
+                {/* 0프렛 (오픈 스트링) - 너트 왼쪽 */}
+                <div
+                  className="absolute h-full cursor-pointer z-30"
+                  style={{
+                    left: "0%",
+                    width: "7%",
+                  }}
+                  onClick={() => handleNoteClick(stringIndex, 0)}
+                >
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {/* 위치 힌트 */}
+                    {shouldShowHint(stringIndex, 0) && (
+                      <div className="absolute w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-slate-400 bg-opacity-30 border border-slate-400 border-opacity-60 rounded-full"></div>
+                    )}
+
+                    {/* 선택된 노트 표시 */}
+                    {isSelectedNote(stringIndex, 0) && (
+                      <div
+                        className={`absolute w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full ${
+                          propSelectedNote?.isCorrect
+                            ? "bg-green-400 bg-opacity-75"
+                            : "bg-red-400 bg-opacity-75"
+                        } border-2 border-white z-40`}
+                      ></div>
+                    )}
+
+                    {/* 정답 하이라이트 */}
+                    {isCorrectAnswer(stringIndex, 0) && (
+                      <div className="absolute w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 border-3 border-red-600 rounded-full z-40"></div>
+                    )}
+
+                    {/* 노트 표시 */}
+                    {shouldShowNote(stringIndex, 0) && (
+                      <div
+                        className="relative w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-lg z-50"
+                        style={{
+                          backgroundColor:
+                            NOTE_COLORS[getNote(stringIndex, 0)?.charAt(0)] ||
+                            "#FFFFFF",
+                          color:
+                            getNote(stringIndex, 0)?.charAt(0) === "C"
+                              ? "#000000"
+                              : "#FFFFFF",
+                        }}
+                      >
+                        {getNote(stringIndex, 0)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 1-12프렛 */}
+                {Array.from({ length: numFrets }, (_, fretIndex) => {
+                  const fretNum = fretIndex + 1;
+                  const note = getNote(stringIndex, fretNum);
+                  const baseNote = note?.charAt(0);
+                  const noteColor = NOTE_COLORS[baseNote] || "#FFFFFF";
+                  const textColor = baseNote === "C" ? "#000000" : "#FFFFFF";
+
+                  return (
+                    <div
+                      key={`fret-${stringIndex}-${fretNum}`}
+                      className="absolute h-full cursor-pointer z-30"
+                      style={{
+                        left: `${7 + (fretIndex / numFrets) * 86}%`,
+                        width: `${86 / numFrets}%`,
+                      }}
+                      onClick={() => handleNoteClick(stringIndex, fretNum)}
+                    >
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        {/* 위치 힌트 */}
+                        {shouldShowHint(stringIndex, fretNum) && (
+                          <div className="absolute w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-slate-400 bg-opacity-30 border border-slate-400 border-opacity-60 rounded-full"></div>
+                        )}
+
+                        {/* 선택된 노트 표시 */}
+                        {isSelectedNote(stringIndex, fretNum) && (
+                          <div
+                            className={`absolute w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full ${
+                              propSelectedNote?.isCorrect
+                                ? "bg-green-400 bg-opacity-75"
+                                : "bg-red-400 bg-opacity-75"
+                            } border-2 border-white z-40`}
+                          ></div>
+                        )}
+
+                        {/* 정답 하이라이트 */}
+                        {isCorrectAnswer(stringIndex, fretNum) && (
+                          <div className="absolute w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 border-3 border-red-600 rounded-full z-40"></div>
+                        )}
+
+                        {/* 노트 표시 */}
+                        {shouldShowNote(stringIndex, fretNum) && (
+                          <div
+                            className="relative w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-lg z-50"
+                            style={{
+                              backgroundColor: noteColor,
+                              color: textColor,
+                            }}
+                          >
+                            {note}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

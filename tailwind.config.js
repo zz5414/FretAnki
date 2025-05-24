@@ -29,8 +29,25 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
-        mono: ["SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
+        sans: [
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+        mono: [
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "Liberation Mono",
+          "Courier New",
+          "monospace",
+        ],
       },
       borderRadius: {
         lg: "var(--radius, 0.75rem)",
@@ -38,16 +55,22 @@ module.exports = {
         sm: "calc(var(--radius, 0.75rem) - 4px)",
       },
       boxShadow: {
-        '2xl-inner': 'inset 0 2px 20px 0 rgb(0 0 0 / 0.2)',
+        "2xl-inner": "inset 0 2px 20px 0 rgb(0 0 0 / 0.2)",
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-in-out',
+        "fade-in": "fadeIn 0.3s ease-in-out",
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 1 },
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
         },
+      },
+      gridTemplateColumns: {
+        13: "repeat(13, minmax(0, 1fr))",
+      },
+      borderWidth: {
+        3: "3px",
       },
     },
   },
