@@ -115,9 +115,9 @@ const Fretboard = ({
 
             {/* 너트 (0프렛과 1프렛 사이의 굵은 선) */}
             <div
-              className="absolute top-0 bottom-0 w-4 bg-yellow-50 z-20"
+              className="absolute top-0 bottom-0 w-2 bg-yellow-50 z-20"
               style={{
-                left: "7%",
+                left: "5%",
                 boxShadow:
                   "2px 0 4px rgba(0, 0, 0, 0.4), inset -2px 0 3px rgba(0, 0, 0, 0.2)",
                 background:
@@ -131,7 +131,7 @@ const Fretboard = ({
                 key={`fret-wire-${fretIndex + 1}`}
                 className="absolute top-0 bottom-0 w-1 bg-gray-50 z-25"
                 style={{
-                  left: `${7 + ((fretIndex + 1) / numFrets) * 86}%`,
+                  left: `${7 + ((fretIndex + 1) / numFrets) * 93}%`,
                   boxShadow:
                     "inset 1px 0 2px rgba(0, 0, 0, 0.3), inset -1px 0 2px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.9)",
                   background:
@@ -146,18 +146,18 @@ const Fretboard = ({
                 key={`fret-marker-${fretNum}`}
                 className="absolute z-5"
                 style={{
-                  left: `${7 + ((fretNum - 0.5) / numFrets) * 86}%`,
+                  left: `${7 + ((fretNum - 0.5) / numFrets) * 93}%`,
                   top: "50%",
                   transform: "translate(-50%, -50%)",
                 }}
               >
                 {fretNum === doubleDotFret ? (
                   <>
-                    <div className="w-3 h-3 bg-yellow-200 rounded-full mb-3 opacity-60"></div>
-                    <div className="w-3 h-3 bg-yellow-200 rounded-full opacity-60"></div>
+                    <div className="w-5 h-5 bg-yellow-200 rounded-full mb-28 opacity-60"></div>
+                    <div className="w-5 h-5 bg-yellow-200 rounded-full opacity-60"></div>
                   </>
                 ) : (
-                  <div className="w-3 h-3 bg-yellow-200 rounded-full opacity-60"></div>
+                  <div className="w-5 h-5 bg-yellow-200 rounded-full opacity-60"></div>
                 )}
               </div>
             ))}
@@ -177,7 +177,7 @@ const Fretboard = ({
                   className="absolute h-full cursor-pointer z-30"
                   style={{
                     left: "0%",
-                    width: "7%",
+                    width: "5%",
                   }}
                   onClick={() => handleNoteClick(stringIndex, 0)}
                 >
@@ -236,8 +236,8 @@ const Fretboard = ({
                       key={`fret-${stringIndex}-${fretNum}`}
                       className="absolute h-full cursor-pointer z-30"
                       style={{
-                        left: `${7 + (fretIndex / numFrets) * 86}%`,
-                        width: `${86 / numFrets}%`,
+                        left: `${7 + (fretIndex / numFrets) * 93}%`,
+                        width: `${93 / numFrets}%`,
                       }}
                       onClick={() => handleNoteClick(stringIndex, fretNum)}
                     >
